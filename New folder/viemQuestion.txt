@@ -1,0 +1,35 @@
+Hi! I'm trying to use Viem, and I did a good progress so far, but I'm stuck trying to use a different signer for my transactions within the tests. If anyone has a clue on how to do that change. I can use some tips:
+  it("shouldn't be able to start if not owner", async function () {
+    // Load the contract instance using the fixture function
+    const { myMigration } = await loadFixture(deployFixture);
+    const [deployerWallet, depositerWallet] = await hre.viem.getWalletClients();
+
+    // change the signer to the depositerWallet
+    // what do I do here?
+
+    // check that the migration is started
+    const started = await myMigration.read.isMigrationActive();
+    assert.isFalse(started);
+  }
+
+
+
+
+
+By default, the first wallet client retrieved by hre.viem.getWalletClients() will be used for 
+interacting with the contract. If you want to specify a different wallet client, you can do so 
+by passing it as a third parameter, just like when deploying a contract:
+
+
+
+
+
+import hre from "hardhat";
+
+const [_, secondWalletClient] = await hre.viem.getWalletClients();
+
+const contract = await hre.viem.getContractAt(
+  "contractName",
+  "0x1234567890123456789012345678901234567890",
+  { walletClient: secondWalletClient }
+);
